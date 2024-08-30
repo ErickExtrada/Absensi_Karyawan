@@ -12,6 +12,69 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Koneksi ke MySQL dengan Sequelize
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
+  host: process.env.DB_HOST,
+  dialect: 'mysql'
+});
+
+const Role = sequelize.define('role', {
+  name: {
+    type: Sequelize.STRING,
+    allowNull: false
+  }
+});
+
+const user = sequelize.define('user', {
+  username: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: true
+  },
+  password: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  roleId: {
+    type: Sequelize.INTEGER,
+    references: {
+      model: Role,
+      key: 'id'
+    }
+  }
+});
+
+const admin = sequelize.define('admin', {
+  attendance_date: {
+    type: Sequelize.DATE,
+    defaultValue: Sequelize.NOW
+  },
+  userId: {
+    type: Sequelize.INTEGER,
+    references: {
+      model: admin,
+      key: 'id'
+    }
+  }
+});
+
+const karyawan = sequelize.define('karyawan', {
+  attendance_date: {
+    type: Sequelize.DATE,
+    defaultValue: Sequelize.NOW
+  },
+  userId: {
+    type: Sequelize.INTEGER,
+    references: {
+      model: karyawan,
+      key: 'id'
+    }
+  }
+});
+
+// Sinkronisasi model dengan database
+sequelize.sync();
+
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -101,5 +164,5 @@ app.post('/api/attendance', authenticateJWT, async (req, res) => {
     res.json(attendances);
   });
   
-  const PORT = process.env.PORT || 5000;
+  const PORT = process.env.PORT || 3306;
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
