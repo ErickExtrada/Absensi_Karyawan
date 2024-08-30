@@ -52,7 +52,7 @@ const admin = sequelize.define('admin', {
   userId: {
     type: Sequelize.INTEGER,
     references: {
-      model: admin,
+      model: user,
       key: 'id'
     }
   }
@@ -66,7 +66,7 @@ const karyawan = sequelize.define('karyawan', {
   userId: {
     type: Sequelize.INTEGER,
     references: {
-      model: karyawan,
+      model: admin,
       key: 'id'
     }
   }
@@ -164,5 +164,5 @@ app.post('/api/attendance', authenticateJWT, async (req, res) => {
     res.json(attendances);
   });
   
-  const PORT = process.env.PORT || 3306;
+  const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
